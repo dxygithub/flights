@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.bdqn.flight.dao.flight.FlightInfoMapper">
+
+	<!-- 获取当前页码的航班信息 -->
+	<select id="flightinfosPage" resultMap="flightinfomapper">
+		SELECT f.*,a1.`addressName` AS startname,a2.`addressName` AS destname FROM flightinfo f INNER JOIN address a1 ON f.`origin`=a1.`addressId`
+		INNER JOIN address a2 ON f.`destination`=a2.`addressId` WHERE 1=1
+		<if test="start!=null and start!=0">
+			and f.`origin`=#{start}
+		</if>
+		<if test="dest!=null and dest!=0">
+			and f.`destination`=#{dest}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			and DATE(f.`takeOffTime`)=#{startTime}
+		</if>
+		<if test="pageIndex!=null">
+			limit #{pageIndex},#{pageSize}
+		</if>
+	</select>
+	
+	<!-- 航班信息映射 -->
+	<resultMap type="cn.bdqn.flight.pojo.Flightinfo" id="flightinfomapper">
+		<id column="filghtId" property="filghtId"/>
+		<result column="takeOffTime" property="takeOffTime"/>
+		<result column="arriveTime" property="arriveTime"/>
+		<result column="price" property="price"/>
+		<result column="startname" property="originInfo"/>
+		<result column="destname" property="destinationInfo"/>
+	</resultMap>
+	
+	<!-- 获取总记录数 -->
+	<select id="getFlightDataCount" resultType="integer">
+		SELECT COUNT(f.`filghtId`) FROM flightinfo f where 1=1
+		<if test="start!=null and start!=0">
+			and f.`origin`=#{start}
+		</if>
+		<if test="dest!=null and dest!=0">
+			and f.`destination`=#{dest}
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			and DATE(f.`takeOffTime`)=#{startTime}
+		</if>
+	</select>
+	
+	<!-- 保存航班信息 -->
+	<insert id="saveFlightInfo" parameterType="cn.bdqn.flight.pojo.Flightinfo">
+		INSERT INTO `flightinfo` (
+		  `filghtId`,
+		  `origin`,
+		  `destination`,
+		  `takeOffTime`,
+		  `arriveTime`,
+		  `price`
+)
+VALUES
+  (
+		    #{filghtId},
+		    #{origin},
+		    #{destination},
+		    #{takeOffTime},
+		    #{arriveTime},
+		    #{price}
+  );
+	</insert>
+	
+	<!-- 编辑航班信息 -->
+	<update id="editFlightInfo" parameterType="cn.bdqn.flight.pojo.Flightinfo">
+		UPDATE
+  		`flightinfo`
+  		<trim prefix="set" suffixOverrides="," suffix="WHERE `filghtId` = #{filghtId}">
+  			<if test="origin!=null and origin!=0">
+  				`origin` = #{origin},
+  			</if>
+  			<if test="destination!=null and destination!=0">
+  			 	`destination` = #{destination},
+  			</if>
+		  	<if test="takeOffTime!=null">
+		  		`takeOffTime` = #{takeOffTime},
+		  	</if>
+		  	<if test="arriveTime!=null">
+		  		`arriveTime` = #{arriveTime},
+		  	</if>
+		  	<if test="price!=null and price!=0">
+		  		`price` = #{price}
+		  	</if>
+  		</trim>
+	</update>
+	
+	<!-- 删除航班信息 -->
+	<delete id="delFlightInfo">
+		DELETE
+FROM
+  `flightinfo`
+WHERE `filghtId` =#{flightNo};
+	</delete>
+	
+	<!-- 生成航班号码 -->
+	<select id="getPrimarykey" resultType="string">
+		SELECT f.`filghtId` FROM flightinfo f ORDER BY f.`filghtId` DESC LIMIT 1
+	</select>
+	
+	<!-- 根据航班号获取航班信息 -->
+	<select id="getFlightInfo" resultType="cn.bdqn.flight.pojo.Flightinfo">
+		SELECT * FROM flightinfo f where f.`filghtId`=#{flightNo}
+	</select>
+</mapper>

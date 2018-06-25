@@ -1,0 +1,13 @@
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings> 
+		<!-- 设置自动匹配 -->
+	 	<setting name="autoMappingBehavior" value="FULL" />
+	 </settings> 
+	 <!-- 设置别名 -->
+	 <!-- <typeAliases>
+	 	<package name="com.bdqn.paper.pojo"></package>
+	 </typeAliases> -->
+</configuration>
